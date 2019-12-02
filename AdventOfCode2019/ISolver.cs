@@ -1,4 +1,4 @@
-namespace AdventOfCode2019Test
+namespace AdventOfCode2019
 {
     public interface ISolver
     {

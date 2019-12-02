@@ -1,5 +1,4 @@
 using System;
-using AdventOfCode2019Test;
 
 namespace AdventOfCode2019.Day01
 {
