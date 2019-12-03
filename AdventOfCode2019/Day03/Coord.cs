@@ -6,6 +6,7 @@ namespace AdventOfCode2019.Day03
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public int Steps { get; set; }
 
         public bool Equals(Coord other)
         {
