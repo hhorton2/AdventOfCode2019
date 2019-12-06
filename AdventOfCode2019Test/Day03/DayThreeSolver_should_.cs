@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using AdventOfCode2019.Day03;
 using FluentAssertions;
 using Xunit;
