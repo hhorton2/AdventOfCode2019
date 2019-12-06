@@ -36,5 +36,27 @@ namespace AdventOfCode2019Test.Day06
 
             _outputHelper.WriteLine($"{actual}");
         }
+        
+        [Theory]
+        [InlineData("COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L\nK)YOU\nI)SAN", "4")]
+        public void solve_for_expected_answer_part_two(string input, string expected)
+        {
+            var solver = new DaySixSolver();
+
+            var actual = solver.PartTwoSolve(input);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void solve_for_unknown_answer_part_two()
+        {
+            var inputs = File.ReadAllLines("./Day06/input_part_one.txt");
+            var solver = new DaySixSolver();
+
+            var actual = solver.PartTwoSolve(string.Join("\n", inputs));
+
+            _outputHelper.WriteLine($"{actual}");
+        }
     }
 }

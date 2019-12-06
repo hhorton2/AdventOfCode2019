@@ -47,5 +47,10 @@ namespace AdventOfCode2019.Day06
                 return hashCode;
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }
