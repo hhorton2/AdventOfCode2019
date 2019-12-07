@@ -1,30 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
+using AdventOfCode2019.Intcode;
 
 namespace AdventOfCode2019.Day05
 {
-    public class DayfiveSolver : ISolver
+    public class DayFiveSolver : ISolver
     {
         public string PartOneSolve(string input)
         {
             var program = input.Split(",").Select(int.Parse).ToArray();
-            program[1] = 12;
-            program[2] = 2;
-            for (var i = 0; i < program.Length; i += 4)
-            {
-                var op = program[i];
-                if (op == 99)
-                {
-                    break;
-                }
+            var computer = new IntcodeComputer();
+            var output = computer.Compute(program, 1);
 
-                var inputLocOne = program[i + 1];
-                var inputLocTwo = program[i + 2];
-                var outputLoc = program[i + 3];
-                UpdateProgram(op, inputLocOne, inputLocTwo, outputLoc, program);
-            }
-
-            return program.Select(i => i.ToString()).Aggregate((output, next) => $"{output},{next}");
+            return string.Join("\n", output);
         }
 
         public string PartTwoSolve(string input)

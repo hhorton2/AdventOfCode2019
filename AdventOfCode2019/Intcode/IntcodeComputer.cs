@@ -64,10 +64,9 @@ namespace AdventOfCode2019.Intcode
                 return new int[0];
             }
 
-            var instructionString = rawInstruction.ToString();
-            return instructionString.Substring(0, instructionString.Length - 2)
-                .Split("")
-                .Select(int.Parse)
+            var instructionString = rawInstruction.ToString().ToCharArray();
+            return instructionString[..^2]
+                .Select(c => int.Parse(c.ToString()))
                 .ToArray();
         }
 
