@@ -15,26 +15,38 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AdventOfCode2019\AdventOfCode2019.csproj" />
+        <ProjectReference Include="..\AdventOfCode2019\AdventOfCode2019.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Day01\input_part_one.txt" />
-      <Content Include="Day01\input_part_one.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <None Remove="Day02\input_part_one.txt" />
-      <Content Include="Day02\input_part_one.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <None Remove="Day03\input_part_one.txt" />
-      <Content Include="Day03\input_part_one.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <None Remove="Day06\input_part_one.txt" />
-      <Content Include="Day06\input_part_one.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+        <None Remove="Day01\input_part_one.txt" />
+        <Content Include="Day01\input_part_one.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Day02\input_part_one.txt" />
+        <Content Include="Day02\input_part_one.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Day03\input_part_one.txt" />
+        <Content Include="Day03\input_part_one.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Day05\input_part_one.txt" />
+        <Content Include="Day05\input_part_one.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Day06\input_part_one.txt" />
+        <Content Include="Day06\input_part_one.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Day07\input_part_one.txt" />
+        <Content Include="Day07\input_part_one.txt">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Day05" />
     </ItemGroup>
 
 </Project>

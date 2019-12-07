@@ -34,26 +34,16 @@ namespace AdventOfCode2019Test.Day02
         [Fact]
         public void solve_for_unknown_answer_part_one()
         {
-            var inputs = File.ReadAllLines("./Day02/input_part_one.txt");
+            var input = File.ReadAllLines("./Day02/input_part_one.txt")[0];
+            var program = input.Split(",").Select(int.Parse).ToArray();
+            program[1] = 12;
+            program[2] = 2;
             var solver = new DayTwoSolver();
 
-            var actual = solver.PartOneSolve(inputs[0]);
+            var actual =
+                solver.PartOneSolve(program.Select(i => i.ToString()).Aggregate((output, next) => $"{output},{next}"));
 
             _outputHelper.WriteLine($"{actual}");
-        }
-
-        [Theory]
-        [InlineData("12", "2")]
-        [InlineData("14", "2")]
-        [InlineData("1969", "966")]
-        [InlineData("100756", "50346")]
-        public void solve_for_expected_answer_part_two(string input, string expected)
-        {
-            var solver = new DayTwoSolver();
-
-            var actual = solver.PartTwoSolve(input);
-
-            actual.Should().Be(expected);
         }
 
         [Fact]
@@ -69,7 +59,8 @@ namespace AdventOfCode2019Test.Day02
                     var program = inputs[0].Split(",").Select(int.Parse).ToArray();
                     program[1] = i;
                     program[2] = j;
-                    var input = program.Select(inputInt => inputInt.ToString()).Aggregate((output, next) => $"{output},{next}");
+                    var input = program.Select(inputInt => inputInt.ToString())
+                        .Aggregate((output, next) => $"{output},{next}");
                     var actual = solver.PartTwoSolve(input);
                     var resultProgram = actual.Split(",").Select(int.Parse).ToArray();
                     if (resultProgram[0] != 19690720)
