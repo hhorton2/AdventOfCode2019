@@ -5,7 +5,7 @@ namespace AdventOfCode2019.Intcode
 {
     public class IntcodeComputer
     {
-        public IEnumerable<string> Compute(int[] memory, int? input = null)
+        public IEnumerable<string> Compute(int[] memory, Queue<int> inputs = null)
         {
             var output = new List<string>();
             var instructionPointer = 0;
@@ -29,7 +29,8 @@ namespace AdventOfCode2019.Intcode
                         currentInstructionLength = Multiply(memory, instructionPointer, parameterModes);
                         break;
                     case 3:
-                        currentInstructionLength = Input(memory, instructionPointer, input.Value);
+                        currentInstructionLength =
+                            Input(memory, instructionPointer, inputs?.Dequeue() ?? 0);
                         break;
                     case 4:
                         currentInstructionLength = Output(memory, instructionPointer, output, parameterModes);

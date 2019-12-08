@@ -10,7 +10,9 @@ namespace AdventOfCode2019.Day05
         {
             var program = input.Split(",").Select(int.Parse).ToArray();
             var computer = new IntcodeComputer();
-            var output = computer.Compute(program, 1);
+            var inputs = new Queue<int>();
+            inputs.Enqueue(1);
+            var output = computer.Compute(program, inputs);
 
             return string.Join("\n", output);
         }
@@ -19,7 +21,9 @@ namespace AdventOfCode2019.Day05
         {
             var program = input.Split(",").Select(int.Parse).ToArray();
             var computer = new IntcodeComputer();
-            var output = computer.Compute(program, 5);
+            var inputs = new Queue<int>();
+            inputs.Enqueue(5);
+            var output = computer.Compute(program, inputs);
 
             return string.Join("\n", output);
         }
