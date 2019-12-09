@@ -39,11 +39,18 @@ namespace AdventOfCode2019Test.Day05
                 "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
             var memory = programString.Split(",").Select(int.Parse).ToArray();
             var computer = new IntcodeComputer();
-            var inputs = new Queue<int>();
-            inputs.Enqueue(int.Parse(input));
-            var output = computer.Compute(memory, inputs);
 
-            output.First().Should().Be(expected);
+            var state = new IntcodeState
+            {
+                Output = new List<string>(),
+                Input = new Queue<int>(),
+                Memory = memory,
+                InstructionPointer = 0
+            };
+            state.Input.Enqueue(int.Parse(input));
+            computer.Compute(state);
+
+            state.Output.First().Should().Be(expected);
         }
 
         [Fact]

@@ -10,22 +10,34 @@ namespace AdventOfCode2019.Day05
         {
             var program = input.Split(",").Select(int.Parse).ToArray();
             var computer = new IntcodeComputer();
-            var inputs = new Queue<int>();
-            inputs.Enqueue(1);
-            var output = computer.Compute(program, inputs);
+            var state = new IntcodeState
+            {
+                Output = new List<string>(),
+                Input = new Queue<int>(),
+                Memory = program,
+                InstructionPointer = 0
+            };
+            state.Input.Enqueue(1);
+            computer.Compute(state);
 
-            return string.Join("\n", output);
+            return string.Join("\n", state.Output);
         }
 
         public string PartTwoSolve(string input)
         {
             var program = input.Split(",").Select(int.Parse).ToArray();
             var computer = new IntcodeComputer();
-            var inputs = new Queue<int>();
-            inputs.Enqueue(5);
-            var output = computer.Compute(program, inputs);
+            var state = new IntcodeState
+            {
+                Output = new List<string>(),
+                Input = new Queue<int>(),
+                Memory = program,
+                InstructionPointer = 0
+            };
+            state.Input.Enqueue(5);
+            computer.Compute(state);
 
-            return string.Join("\n", output);
+            return string.Join("\n", state.Output);
         }
 
         private static void UpdateProgram(int op, int inputLocOne, int inputLocTwo, int outputLoc, IList<int> program)

@@ -1,21 +1,19 @@
-using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventOfCode2019.Intcode
 {
     public class IntcodeComputer
     {
-        public IEnumerable<string> Compute(int[] memory, Queue<int> inputs = null)
+        public void Compute(IntcodeState state)
         {
-            var output = new List<string>();
-            var instructionPointer = 0;
             var currentInstructionLength = 4;
             while (true)
             {
-                var op = GetOpCode(memory[instructionPointer]);
-                var parameterModes = GetParameterModes(memory[instructionPointer]);
+                var op = GetOpCode(state.Memory[state.InstructionPointer]);
+                var parameterModes = GetParameterModes(state.Memory[state.InstructionPointer]);
                 if (op == 99)
                 {
+                    state.Halted = true;
                     break;
                 }
 
@@ -23,36 +21,40 @@ namespace AdventOfCode2019.Intcode
                 switch (op)
                 {
                     case 1:
-                        currentInstructionLength = Add(memory, instructionPointer, parameterModes);
+                        currentInstructionLength = Add(state, parameterModes);
                         break;
                     case 2:
-                        currentInstructionLength = Multiply(memory, instructionPointer, parameterModes);
+                        currentInstructionLength = Multiply(state, parameterModes);
                         break;
                     case 3:
                         currentInstructionLength =
-                            Input(memory, instructionPointer, inputs?.Dequeue() ?? 0);
+                            Input(state, state.Input?.Dequeue() ?? 0);
                         break;
                     case 4:
-                        currentInstructionLength = Output(memory, instructionPointer, output, parameterModes);
+                        currentInstructionLength = Output(state, parameterModes);
+                        if (state.BreakOnOutput)
+                        {
+                            state.InstructionPointer += currentInstructionLength;
+                            return;
+                        }
+
                         break;
                     case 5:
-                        currentInstructionLength = JumpTrue(memory, ref instructionPointer, parameterModes);
+                        currentInstructionLength = JumpTrue(state, parameterModes);
                         break;
                     case 6:
-                        currentInstructionLength = JumpFalse(memory, ref instructionPointer, parameterModes);
+                        currentInstructionLength = JumpFalse(state, parameterModes);
                         break;
                     case 7:
-                        currentInstructionLength = LessThan(memory, instructionPointer, parameterModes);
+                        currentInstructionLength = LessThan(state, parameterModes);
                         break;
                     case 8:
-                        currentInstructionLength = Equals(memory, instructionPointer, parameterModes);
+                        currentInstructionLength = Equals(state, parameterModes);
                         break;
                 }
 
-                instructionPointer += currentInstructionLength;
+                state.InstructionPointer += currentInstructionLength;
             }
-
-            return output;
         }
 
         private static int GetOpCode(int rawInstruction)
@@ -79,113 +81,113 @@ namespace AdventOfCode2019.Intcode
                 .ToArray();
         }
 
-        private static int Add(int[] memory, int instructionPointer, int[] parameterModes)
+        private static int Add(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
-            var parameterThree = memory[instructionPointer + 3];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
+            var parameterThree = state.Memory[state.InstructionPointer + 3];
             var inputTwoMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputOneMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputOneValue = inputOneMode == 0 ? memory[parameterOne] : parameterOne;
-            var inputTwoValue = inputTwoMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputOneValue = inputOneMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var inputTwoValue = inputTwoMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
 
-            memory[parameterThree] = inputOneValue + inputTwoValue;
+            state.Memory[parameterThree] = inputOneValue + inputTwoValue;
 
             return 4;
         }
 
-        private static int Multiply(int[] memory, int instructionPointer, int[] parameterModes)
+        private static int Multiply(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
-            var parameterThree = memory[instructionPointer + 3];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
+            var parameterThree = state.Memory[state.InstructionPointer + 3];
             var inputTwoMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputOneMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputOneValue = inputOneMode == 0 ? memory[parameterOne] : parameterOne;
-            var inputTwoValue = inputTwoMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputOneValue = inputOneMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var inputTwoValue = inputTwoMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
 
-            memory[parameterThree] = inputOneValue * inputTwoValue;
+            state.Memory[parameterThree] = inputOneValue * inputTwoValue;
 
             return 4;
         }
 
-        private static int Input(int[] memory, int instructionPointer, int input)
+        private static int Input(IntcodeState state, int input)
         {
-            var outputLoc = memory[instructionPointer + 1];
-            memory[outputLoc] = input;
+            var outputLoc = state.Memory[state.InstructionPointer + 1];
+            state.Memory[outputLoc] = input;
             return 2;
         }
 
-        private static int Output(int[] memory, int instructionPointer, List<string> output, int[] parameterModes)
+        private static int Output(IntcodeState state, int[] parameterModes)
         {
-            var pointer = instructionPointer + 1;
-            var outputLoc = memory[pointer];
+            var pointer = state.InstructionPointer + 1;
+            var outputLoc = state.Memory[pointer];
             var outputMode = parameterModes.Length > 0 ? parameterModes[0] : 0;
-            var outputValue = outputMode == 0 ? memory[outputLoc] : outputLoc;
-            output.Add(outputValue.ToString());
+            var outputValue = outputMode == 0 ? state.Memory[outputLoc] : outputLoc;
+            state.Output.Add(outputValue.ToString());
             return 2;
         }
 
-        private static int JumpTrue(int[] memory, ref int instructionPointer, int[] parameterModes)
+        private static int JumpTrue(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
             var outputMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputValue = inputMode == 0 ? memory[parameterOne] : parameterOne;
-            var outputValue = outputMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputValue = inputMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var outputValue = outputMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
             if (inputValue == 0)
             {
                 return 3;
             }
 
-            instructionPointer = outputValue;
+            state.InstructionPointer = outputValue;
             return 0;
         }
 
-        private static int JumpFalse(int[] memory, ref int instructionPointer, int[] parameterModes)
+        private static int JumpFalse(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
             var writeMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputValue = inputMode == 0 ? memory[parameterOne] : parameterOne;
-            var writeValue = writeMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputValue = inputMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var writeValue = writeMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
             if (inputValue == 0)
             {
-                instructionPointer = writeValue;
+                state.InstructionPointer = writeValue;
                 return 0;
             }
 
             return 3;
         }
 
-        private static int LessThan(int[] memory, int instructionPointer, int[] parameterModes)
+        private static int LessThan(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
-            var parameterThree = memory[instructionPointer + 3];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
+            var parameterThree = state.Memory[state.InstructionPointer + 3];
             var inputTwoMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputOneMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputOneValue = inputOneMode == 0 ? memory[parameterOne] : parameterOne;
-            var inputTwoValue = inputTwoMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputOneValue = inputOneMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var inputTwoValue = inputTwoMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
 
-            memory[parameterThree] = inputOneValue < inputTwoValue ? 1 : 0;
+            state.Memory[parameterThree] = inputOneValue < inputTwoValue ? 1 : 0;
 
             return 4;
         }
 
-        private static int Equals(int[] memory, int instructionPointer, int[] parameterModes)
+        private static int Equals(IntcodeState state, int[] parameterModes)
         {
-            var parameterOne = memory[instructionPointer + 1];
-            var parameterTwo = memory[instructionPointer + 2];
-            var parameterThree = memory[instructionPointer + 3];
+            var parameterOne = state.Memory[state.InstructionPointer + 1];
+            var parameterTwo = state.Memory[state.InstructionPointer + 2];
+            var parameterThree = state.Memory[state.InstructionPointer + 3];
             var inputTwoMode = parameterModes.Length >= 2 ? parameterModes[^2] : 0;
             var inputOneMode = parameterModes.Length >= 1 ? parameterModes[^1] : 0;
-            var inputOneValue = inputOneMode == 0 ? memory[parameterOne] : parameterOne;
-            var inputTwoValue = inputTwoMode == 0 ? memory[parameterTwo] : parameterTwo;
+            var inputOneValue = inputOneMode == 0 ? state.Memory[parameterOne] : parameterOne;
+            var inputTwoValue = inputTwoMode == 0 ? state.Memory[parameterTwo] : parameterTwo;
 
-            memory[parameterThree] = inputOneValue == inputTwoValue ? 1 : 0;
+            state.Memory[parameterThree] = inputOneValue == inputTwoValue ? 1 : 0;
 
             return 4;
         }
