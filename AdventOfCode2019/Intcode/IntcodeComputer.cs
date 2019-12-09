@@ -57,7 +57,7 @@ namespace AdventOfCode2019.Intcode
             }
         }
 
-        private static int GetOpCode(int rawInstruction)
+        private static long GetOpCode(long rawInstruction)
         {
             if (rawInstruction < 100)
             {
@@ -68,7 +68,7 @@ namespace AdventOfCode2019.Intcode
             return int.Parse(instructionString.Substring(instructionString.Length - 2));
         }
 
-        private static int[] GetParameterModes(int rawInstruction)
+        private static int[] GetParameterModes(long rawInstruction)
         {
             if (rawInstruction < 100)
             {

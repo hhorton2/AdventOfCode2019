@@ -7,9 +7,11 @@ namespace AdventOfCode2019.Day07
 {
     public class DaySevenSolver : ISolver
     {
+        private readonly IntcodeProgramParser _parser = new IntcodeProgramParser();
+
         public string PartOneSolve(string input)
         {
-            var rom = new ReadOnlyCollection<int>(input.Split(",").Select(int.Parse).ToArray());
+            var rom = new ReadOnlyDictionary<long, long>(_parser.ParseProgram(input));
             var computer = new IntcodeComputer();
             var maxThrust = 0;
             for (var a = 0; a < 5; a++)
@@ -40,30 +42,30 @@ namespace AdventOfCode2019.Day07
                                 state.Input.Enqueue(0);
                                 computer.Compute(state);
                                 var output = state.Output.First();
-                                
+
                                 state = GetFreshState(rom);
                                 state.Input.Enqueue(b);
                                 state.Input.Enqueue(int.Parse(output));
                                 computer.Compute(state);
                                 output = state.Output.First();
-                                
+
                                 state = GetFreshState(rom);
                                 state.Input.Enqueue(c);
                                 state.Input.Enqueue(int.Parse(output));
                                 computer.Compute(state);
                                 output = state.Output.First();
-                                
+
                                 state = GetFreshState(rom);
                                 state.Input.Enqueue(d);
                                 state.Input.Enqueue(int.Parse(output));
                                 computer.Compute(state);
                                 output = state.Output.First();
-                                
+
                                 state = GetFreshState(rom);
                                 state.Input.Enqueue(e);
                                 state.Input.Enqueue(int.Parse(output));
                                 computer.Compute(state);
-                                
+
                                 var currentThrust = int.Parse(state.Output.First());
                                 if (currentThrust > maxThrust)
                                 {
@@ -78,13 +80,13 @@ namespace AdventOfCode2019.Day07
             return maxThrust.ToString();
         }
 
-        private static IntcodeState GetFreshState(ReadOnlyCollection<int> rom)
+        private static IntcodeState GetFreshState(IReadOnlyDictionary<long, long> rom)
         {
             var state = new IntcodeState
             {
                 Output = new List<string>(),
                 Input = new Queue<int>(),
-                Memory = rom.ToArray(),
+                Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 InstructionPointer = 0,
                 BreakOnOutput = false,
                 Halted = false
@@ -94,7 +96,7 @@ namespace AdventOfCode2019.Day07
 
         public string PartTwoSolve(string input)
         {
-            var rom = new ReadOnlyCollection<int>(input.Split(",").Select(int.Parse).ToArray());
+            var rom = new ReadOnlyDictionary<long, long>(_parser.ParseProgram(input));
             var computer = new IntcodeComputer();
             var maxThrust = 0;
             for (var a = 5; a < 10; a++)
@@ -119,12 +121,13 @@ namespace AdventOfCode2019.Day07
                                 {
                                     continue;
                                 }
+
                                 var programStates = new List<IntcodeState>
                                 {
                                     new IntcodeState
                                     {
                                         Input = new Queue<int>(),
-                                        Memory = rom.ToArray(),
+                                        Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                                         Output = new List<string>(),
                                         InstructionPointer = 0,
                                         BreakOnOutput = true
@@ -132,7 +135,7 @@ namespace AdventOfCode2019.Day07
                                     new IntcodeState
                                     {
                                         Input = new Queue<int>(),
-                                        Memory = rom.ToArray(),
+                                        Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                                         Output = new List<string>(),
                                         InstructionPointer = 0,
                                         BreakOnOutput = true
@@ -140,7 +143,7 @@ namespace AdventOfCode2019.Day07
                                     new IntcodeState
                                     {
                                         Input = new Queue<int>(),
-                                        Memory = rom.ToArray(),
+                                        Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                                         Output = new List<string>(),
                                         InstructionPointer = 0,
                                         BreakOnOutput = true
@@ -148,7 +151,7 @@ namespace AdventOfCode2019.Day07
                                     new IntcodeState
                                     {
                                         Input = new Queue<int>(),
-                                        Memory = rom.ToArray(),
+                                        Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                                         Output = new List<string>(),
                                         InstructionPointer = 0,
                                         BreakOnOutput = true
@@ -156,7 +159,7 @@ namespace AdventOfCode2019.Day07
                                     new IntcodeState
                                     {
                                         Input = new Queue<int>(),
-                                        Memory = rom.ToArray(),
+                                        Memory = rom.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                                         Output = new List<string>(),
                                         InstructionPointer = 0,
                                         BreakOnOutput = true
